@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import huffman.Huffman;
+import sorteo.Apuesta;
 
 public class Main {
     public static void main(String[] args) throws Exception {

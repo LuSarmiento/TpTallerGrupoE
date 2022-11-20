@@ -1,3 +1,5 @@
+package sorteo;
+
 public class Apuesta {
 
     int valorApuesta;
