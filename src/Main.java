@@ -20,14 +20,10 @@ public class Main {
 
         List<Apuesta> apuestasList = new ArrayList<Apuesta>();
         for (int i = 0; i < 4; i++) {
-            int valor = random.nextInt(1000-10)+10;
-            System.out.println("valor generado: "+valor);
-            int numero = random.nextInt(9999-1)+1;
-            System.out.println("numero generado: "+numero);
-            int posicion = random.nextInt(20-1)+1;
-            System.out.println("posicion generado: "+posicion);
-
-            Apuesta apuesta = new Apuesta(valor, numero, posicion);
+            Apuesta apuesta = new Apuesta();
+            System.out.println("valor generado: " + apuesta.getValor());
+            System.out.println("numero generado: " + apuesta.getNumero());
+            System.out.println("posicion generado: " + apuesta.getPosicion());
             apuestasList.add(apuesta);
         }
 
@@ -47,7 +43,7 @@ public class Main {
         bw.newLine();
         bw.write("Apuesta Numero Posicion\n");
         for (Apuesta elemento: apuestasList) {
-            bw.write("$"+elemento.getValorApuesta()+" "+elemento.getNumero()+" "+elemento.getPosicion()+"\n");
+            bw.write("$"+elemento.getValor()+" "+elemento.getNumero()+" "+elemento.getPosicion()+"\n");
         }
 
         bw.close();
