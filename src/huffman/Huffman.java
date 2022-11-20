@@ -14,225 +14,233 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class Huffman {
-	public Nodo raiz;
-	public Map<Integer, String> codigos;
-	public Map<Integer, Integer> frecuencias;
-	private long nchars;
-	public File origen;
-	public File destino;
-	public File referencia;
-	private final String SUFIJO_DESTINO = ".cmp";
-	private final String SUFIJO_REFERENCIA = ".ref";
+    public Nodo raiz;
+    public Map<Integer, String> codigos;
+    public Map<Integer, Integer> frecuencias;
+    private long nchars;
+    public File origen;
+    public File destino;
+    public File referencia;
+    private final String SUFIJO_DESTINO = ".cmp";
+    private final String SUFIJO_REFERENCIA = ".ref";
 
-	public Huffman(File origen) {
-		this.codigos = new LinkedHashMap<Integer, String>();
-		this.frecuencias = new LinkedHashMap<Integer, Integer>();
-		this.origen = origen;
-		this.destino = new File(origen + SUFIJO_DESTINO);
-		this.referencia = new File(origen + SUFIJO_REFERENCIA);
-	}
+    public Huffman(File origen) {
+        this.codigos = new LinkedHashMap<Integer, String>();
+        this.frecuencias = new LinkedHashMap<Integer, Integer>();
+        this.origen = origen;
+        this.destino = new File(origen + SUFIJO_DESTINO);
+        this.referencia = new File(origen + SUFIJO_REFERENCIA);
+    }
 
-	public void cargarFrecuencias() throws IOException {
-		BufferedReader f = new BufferedReader(new FileReader(origen));
+    public void comprimirArchivo() throws Exception {
+        cargarFrecuencias();
+        crearArbol();
+        generarCodigos();
+        comprimir();
+        guardarCodigos();
+    }
 
-		int n;
-		while ((n = f.read()) != -1) {
-			if (!frecuencias.containsKey(n)) {
-				frecuencias.put(n, 1);
-				continue;
-			}
+    public void cargarFrecuencias() throws IOException {
+        BufferedReader f = new BufferedReader(new FileReader(origen));
 
-			frecuencias.put(n, frecuencias.get(n) + 1);
-		}
+        int n;
+        while ((n = f.read()) != -1) {
+            if (!frecuencias.containsKey(n)) {
+                frecuencias.put(n, 1);
+                continue;
+            }
 
-		f.close();
-	}
+            frecuencias.put(n, frecuencias.get(n) + 1);
+        }
 
-	public void comprimir() throws Exception {
-		BufferedWriter d = new BufferedWriter(new FileWriter(destino));
-		String cmp = mensajeCodificado();
+        f.close();
+    }
 
-		while (cmp.length() >= 8) {
-			String b = cmp.substring(0, 8);
-			d.write(Integer.parseInt(b, 2));
-			cmp = cmp.substring(8, cmp.length());
-		}
+    public void comprimir() throws Exception {
+        BufferedWriter d = new BufferedWriter(new FileWriter(destino));
+        String cmp = mensajeCodificado();
 
-		d.close();
-	}
+        while (cmp.length() >= 8) {
+            String b = cmp.substring(0, 8);
+            d.write(Integer.parseInt(b, 2));
+            cmp = cmp.substring(8, cmp.length());
+        }
 
-	public String mensajeCodificado() throws Exception {
-		BufferedReader o = new BufferedReader(new FileReader(origen));
-		StringBuilder sb = new StringBuilder();
+        d.close();
+    }
 
-		int c;
-		nchars = 0;
-		while ((c = o.read()) != -1) {
-			sb.append(codigos.get(c));
-			nchars++;
-		}
+    public String mensajeCodificado() throws Exception {
+        BufferedReader o = new BufferedReader(new FileReader(origen));
+        StringBuilder sb = new StringBuilder();
 
-		while (sb.length() % 8 != 0)
-			sb.append('0');
+        int c;
+        nchars = 0;
+        while ((c = o.read()) != -1) {
+            sb.append(codigos.get(c));
+            nchars++;
+        }
 
-		o.close();
-		return sb.toString();
-	}
+        while (sb.length() % 8 != 0)
+            sb.append('0');
 
-	public void guardarCodigos() throws Exception {
-		BufferedWriter d = new BufferedWriter(new FileWriter(referencia));
+        o.close();
+        return sb.toString();
+    }
 
-		d.write("Caracter,Binario");
-		d.newLine();
-		for (Map.Entry<Integer, String> entry: codigos.entrySet()) {
-			d.write(entry.getKey()+","+entry.getValue());
-			d.newLine();
-		}
+    public void guardarCodigos() throws Exception {
+        BufferedWriter d = new BufferedWriter(new FileWriter(referencia));
 
-		d.close();
-	}
+        d.write("Caracter,Binario");
+        d.newLine();
+        for (Map.Entry<Integer, String> entry : codigos.entrySet()) {
+            d.write(entry.getKey() + "," + entry.getValue());
+            d.newLine();
+        }
 
-	public void leerReferencia() throws Exception {
-		BufferedReader d = new BufferedReader(new FileReader(referencia));
-		Map<Integer, String> m = new LinkedHashMap<Integer, String>();
+        d.close();
+    }
 
-		nchars = Integer.parseInt(d.readLine());
-		for (String t : d.readLine().split(",")) {
-			if (t.substring(0, 1).equals("{"))
-				t = t.substring(1, t.length());
-			if (t.substring(t.length() - 1, t.length()).equals("}"))
-				t = t.substring(0, t.length() - 1);
+    public void leerReferencia() throws Exception {
+        BufferedReader d = new BufferedReader(new FileReader(referencia));
+        Map<Integer, String> m = new LinkedHashMap<Integer, String>();
 
-			String[] ss = t.split("=");
-			m.put(Integer.parseInt(ss[0].trim()), ss[1].trim());
-		}
+        nchars = Integer.parseInt(d.readLine());
+        for (String t : d.readLine().split(",")) {
+            if (t.substring(0, 1).equals("{"))
+                t = t.substring(1, t.length());
+            if (t.substring(t.length() - 1, t.length()).equals("}"))
+                t = t.substring(0, t.length() - 1);
 
-		codigos = m;
-		d.close();
-	}
+            String[] ss = t.split("=");
+            m.put(Integer.parseInt(ss[0].trim()), ss[1].trim());
+        }
 
-	private Map<String, Integer> codigosInvertidos() {
-		Map<String, Integer> m = new LinkedHashMap<String, Integer>();
+        codigos = m;
+        d.close();
+    }
 
-		for (Integer i : codigos.keySet())
-			m.put(codigos.get(i), i);
+    private Map<String, Integer> codigosInvertidos() {
+        Map<String, Integer> m = new LinkedHashMap<String, Integer>();
 
-		return m;
-	}
+        for (Integer i : codigos.keySet())
+            m.put(codigos.get(i), i);
 
-	public void descomprimir() throws Exception {
-		BufferedReader d = new BufferedReader(new FileReader(destino));
-		Map<String, Integer> m = codigosInvertidos();
+        return m;
+    }
 
-		StringBuilder sb = new StringBuilder();
+    public void descomprimir() throws Exception {
+        BufferedReader d = new BufferedReader(new FileReader(destino));
+        Map<String, Integer> m = codigosInvertidos();
 
-		int c;
-		while ((c = d.read()) != -1)
-			sb.append(String.format("%8s",
-					Integer.toBinaryString(c))
-					.replace(' ', '0'));
+        StringBuilder sb = new StringBuilder();
 
-		// System.out.println(sb.toString());
-		// TODO: improve code
-		d.close();
-		BufferedWriter o = new BufferedWriter(new FileWriter(origen));
+        int c;
+        while ((c = d.read()) != -1)
+            sb.append(String.format("%8s",
+                    Integer.toBinaryString(c))
+                    .replace(' ', '0'));
 
-		String curr;
-		int mchars = 9, chars = 0, p = 0, f = 1;
-		while (f <= sb.length() && chars < mchars) {
-			curr = sb.substring(p, f);
+        // System.out.println(sb.toString());
+        // TODO: improve code
+        d.close();
+        BufferedWriter o = new BufferedWriter(new FileWriter(origen));
 
-			if (m.get(curr) == null) {
-				f++;
-				continue;
-			}
+        String curr;
+        int mchars = 9, chars = 0, p = 0, f = 1;
+        while (f <= sb.length() && chars < mchars) {
+            curr = sb.substring(p, f);
 
-			// System.out.printf("%c", m.get(curr));
-			o.write(m.get(curr));
-			chars++;
-			p = f;
-		}
-		o.close();
-	}
+            if (m.get(curr) == null) {
+                f++;
+                continue;
+            }
 
-	public void crearArbol() {
-		procesarLista(crearLista());
-	}
+            // System.out.printf("%c", m.get(curr));
+            o.write(m.get(curr));
+            chars++;
+            p = f;
+        }
+        o.close();
+    }
 
-	public List<Nodo> crearLista() {
-		List<Nodo> listaArboles = new LinkedList<Nodo>();
+    public void crearArbol() {
+        procesarLista(crearLista());
+    }
 
-		for (int i : frecuencias.keySet()) {
-			if (i <= 0)
-				continue;
+    public List<Nodo> crearLista() {
+        List<Nodo> listaArboles = new LinkedList<Nodo>();
 
-			Nodo n = new Nodo((char) i, frecuencias.get(i), true);
-			listaArboles.add(n);
-		}
+        for (int i : frecuencias.keySet()) {
+            if (i <= 0)
+                continue;
 
-		return listaArboles;
-	}
+            Nodo n = new Nodo((char) i, frecuencias.get(i), true);
+            listaArboles.add(n);
+        }
 
-	public void procesarLista(List<Nodo> nodos) {
-		Queue<Nodo> cola = new PriorityQueue<Nodo>(nodos);
+        return listaArboles;
+    }
 
-		while (cola.size() != 1) {
-			Nodo n = new Nodo('\0', 0, false);
-			n.izq = cola.poll();
-			n.der = cola.poll();
-			n.frec = n.izq.frec + n.der.frec;
-			cola.add(n);
-		}
+    public void procesarLista(List<Nodo> nodos) {
+        Queue<Nodo> cola = new PriorityQueue<Nodo>(nodos);
 
-		this.raiz = cola.poll();
-	}
+        while (cola.size() != 1) {
+            Nodo n = new Nodo('\0', 0, false);
+            n.izq = cola.poll();
+            n.der = cola.poll();
+            n.frec = n.izq.frec + n.der.frec;
+            cola.add(n);
+        }
 
-	public void generarCodigos() {
-		generarCodigosRec(raiz, "");
-	}
+        this.raiz = cola.poll();
+    }
 
-	private void generarCodigosRec(Nodo n, String c) {
-		if (n == null)
-			return;
+    public void generarCodigos() {
+        generarCodigosRec(raiz, "");
+    }
 
-		generarCodigosRec(n.izq, c + '0');
-		generarCodigosRec(n.der, c + '1');
+    private void generarCodigosRec(Nodo n, String c) {
+        if (n == null)
+            return;
 
-		if (n.dato == '\0')
-			return;
-		codigos.put((int) n.dato, c);
-	}
+        generarCodigosRec(n.izq, c + '0');
+        generarCodigosRec(n.der, c + '1');
 
-	public void mostrarTablaCompleta() {
-		List<Nodo> l = crearLista();
-		System.out.printf("char	hex	codigo	frecuencia\n");
-		for (Nodo n : l)
-			System.out.printf("%c	%02x	%s	%d\n",
-					Character.isWhitespace(n.dato) ? ' ' : n.dato,
-					(int) n.dato, codigos.get((int) n.dato),
-					n.frec);
-	}
+        if (n.dato == '\0')
+            return;
+        codigos.put((int) n.dato, c);
+    }
 
-	public void mostrarEnOrden() {
-		printPreOrder(raiz, 1);
-	}
+    public void mostrarTablaCompleta() {
+        List<Nodo> l = crearLista();
+        System.out.printf("char	hex	codigo	frecuencia\n");
+        for (Nodo n : l)
+            System.out.printf("%c	%02x	%s	%d\n",
+                    Character.isWhitespace(n.dato) ? ' ' : n.dato,
+                    (int) n.dato, codigos.get((int) n.dato),
+                    n.frec);
+    }
 
-	private void printPreOrder(Nodo n, int spaces) {
-		if (n == null)
-			return;
+    public void mostrarEnOrden() {
+        printPreOrder(raiz, 1);
+    }
 
-		printPreOrder(n.der, spaces + 1);
+    private void printPreOrder(Nodo n, int spaces) {
+        if (n == null)
+            return;
 
-		String fmt;
-		if (Character.isWhitespace(n.dato))
-			fmt = "%" + Integer.toString(spaces) + "s(%s)\n";
-		else
-			fmt = "%" + Integer.toString(spaces) + "s(%s)\n";
-		String str = String.format(fmt,
-				Character.isWhitespace(n.dato) ? "~" : n.dato,
-				codigos.get((int) n.dato)).replace(' ', '	');
-		System.out.print(str);
+        printPreOrder(n.der, spaces + 1);
 
-		printPreOrder(n.izq, spaces + 1);
-	}
+        String fmt;
+        if (Character.isWhitespace(n.dato))
+            fmt = "%" + Integer.toString(spaces) + "s(%s)\n";
+        else
+            fmt = "%" + Integer.toString(spaces) + "s(%s)\n";
+        String str = String.format(fmt,
+                Character.isWhitespace(n.dato) ? "~" : n.dato,
+                codigos.get((int) n.dato)).replace(' ', '	');
+        System.out.print(str);
+
+        printPreOrder(n.izq, spaces + 1);
+    }
 }
