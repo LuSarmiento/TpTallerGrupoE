@@ -82,9 +82,12 @@ public class Huffman {
 	public void guardarCodigos() throws Exception {
 		BufferedWriter d = new BufferedWriter(new FileWriter(referencia));
 
-		d.write(Long.toString(nchars));
+		d.write("Caracter,Binario");
 		d.newLine();
-		d.write(codigos.toString());
+		for (Map.Entry<Integer, String> entry: codigos.entrySet()) {
+			d.write(entry.getKey()+","+entry.getValue());
+			d.newLine();
+		}
 
 		d.close();
 	}
