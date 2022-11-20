@@ -2,7 +2,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import huffman.Huffman;
 
@@ -11,7 +11,7 @@ public class Main {
         Scanner entrada = new Scanner(System.in);
         Random random = new Random();
 
-        LocalDate date = java.time.LocalDate.now();
+        LocalDateTime date = java.time.LocalDateTime.now();
         System.out.println("fecha "+date);
 
         System.out.println("Desea apostar para la mañana o para la noche\nIngrese 1 para 'DIA'\nIngrese 2 para 'NOCHE'");
@@ -36,6 +36,14 @@ public class Main {
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(nombreArchivo));
 
+        bw.write("Nombre del archivo="+nombreArchivo);
+        bw.newLine();
+        bw.write("Jugada= "+turno);
+        bw.newLine();
+        bw.write("Fecha y Hora="+date);
+        bw.newLine();
+        bw.write("Dni=32541874");
+        bw.newLine();
         bw.write("Apuesta Numero Posicion\n");
         for (Apuesta elemento: apuestasList) {
             bw.write("$"+elemento.getValorApuesta()+" "+elemento.getNumero()+" "+elemento.getPosicion()+"\n");
