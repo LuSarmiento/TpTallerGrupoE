@@ -1,22 +1,18 @@
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.util.*;
+import huffman.Huffman;
 
 public class Main {
-    public static void main(String[] args) {
-        /*final String archivo = "test.txt";
-
-        BufferedWriter bw = new BufferedWriter(new FileWriter(archivo));
-
-        bw.write("test\n");
-
-        bw.close();*/
+    public static void main(String[] args) throws Exception {
         Scanner entrada = new Scanner(System.in);
         Random random = new Random();
+
+        LocalDate date = java.time.LocalDate.now();
+        System.out.println("fecha "+date);
 
         System.out.println("Desea apostar para la mañana o para la noche\nIngrese 1 para 'DIA'\nIngrese 2 para 'NOCHE'");
         int turno = entrada.nextInt();
@@ -33,5 +29,28 @@ public class Main {
             Apuesta apuesta = new Apuesta(valor, numero, posicion);
             apuestasList.add(apuesta);
         }
+
+        // Hacer while para hacer por consola
+
+        final String nombreArchivo = "jugada_"+date+"_dni_"+turno+".txt";
+
+        BufferedWriter bw = new BufferedWriter(new FileWriter(nombreArchivo));
+
+        bw.write("Apuesta Numero Posicion\n");
+        for (Apuesta elemento: apuestasList) {
+            bw.write("$"+elemento.getValorApuesta()+" "+elemento.getNumero()+" "+elemento.getPosicion()+"\n");
+        }
+
+        bw.close();
+
+        File archivo = new File(nombreArchivo);
+        Huffman huffman = new Huffman(archivo);
+        huffman.cargarFrecuencias();
+        huffman.crearArbol();
+        huffman.generarCodigos();
+        String s = huffman.mensajeCodificado();
+        System.out.printf("%s\n", s);
+        huffman.comprimir();
+        huffman.guardarCodigos();
     }
 }
