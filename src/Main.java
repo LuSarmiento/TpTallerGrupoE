@@ -1,7 +1,6 @@
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import huffman.Huffman;
@@ -10,7 +9,6 @@ import sorteo.Apuesta;
 public class Main {
     public static void main(String[] args) throws Exception {
         Scanner entrada = new Scanner(System.in);
-        Random random = new Random();
 
         LocalDateTime date = java.time.LocalDateTime.now();
         System.out.println("fecha "+date);
@@ -26,8 +24,6 @@ public class Main {
             System.out.println("posicion generado: " + apuesta.getPosicion());
             apuestasList.add(apuesta);
         }
-
-        // Hacer while para hacer por consola
 
         final String nombreArchivo = "jugada_"+date+"_dni_"+turno+".txt";
 
