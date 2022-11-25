@@ -1,7 +1,6 @@
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.time.LocalDateTime;
 import java.util.*;
 import huffman.Huffman;
 import sorteo.Apuesta;
@@ -10,8 +9,9 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Scanner entrada = new Scanner(System.in);
 
-        LocalDateTime date = java.time.LocalDateTime.now();
-        System.out.println("fecha "+date);
+        String date = java.time.LocalDateTime.now().toString()
+                .split("T")[0];
+        System.out.println("fecha " + date);
 
         System.out.println("Desea apostar para la mañana o para la noche\nIngrese 1 para 'DIA'\nIngrese 2 para 'NOCHE'");
         int turno = entrada.nextInt();
