@@ -30,12 +30,6 @@ public class Main {
 
         File archivo = new File(nombreArchivo);
         Huffman huffman = new Huffman(archivo);
-        huffman.cargarFrecuencias();
-        huffman.crearArbol();
-        huffman.generarCodigos();
-        String s = huffman.mensajeCodificado();
-        System.out.printf("%s\n", s);
-        huffman.comprimir();
-        huffman.guardarCodigos();
+        huffman.comprimirArchivo();
     }
 }
