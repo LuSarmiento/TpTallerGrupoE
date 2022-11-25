@@ -1,35 +1,19 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+
 import huffman.Huffman;
-import sorteo.Apuesta;
+import sorteo.Jugada;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String date = java.time.LocalDateTime.now().toString()
-                .split("T")[0];
-        String turno = "maniana";
+        List<Jugada> jugadas = new LinkedList<Jugada>();
+        jugadas.add(new Jugada(3, "maniana"));
+        jugadas.add(new Jugada(3, "noche"));
 
-        List<Apuesta> apuestasList = new ArrayList<Apuesta>();
-        for (int i = 0; i < 4; i++) {
-            Apuesta apuesta = new Apuesta();
-            apuestasList.add(apuesta);
+        for (Jugada jugada : jugadas) {
+            jugada.guardar();
+            Huffman huffman = new Huffman(jugada.getArchivo());
+            huffman.comprimirArchivo();
         }
-
-        final String nombreArchivo = "jugada_" + date + "_dni_" + turno + ".txt";
-
-        BufferedWriter bw = new BufferedWriter(new FileWriter(nombreArchivo));
-
-        bw.write("Apuesta Numero Posicion\n");
-        for (Apuesta elemento : apuestasList) {
-            bw.write("$" + elemento.getValor() + " " + elemento.getNumero() + " " + elemento.getPosicion() + "\n");
-        }
-
-        bw.close();
-
-        File archivo = new File(nombreArchivo);
-        Huffman huffman = new Huffman(archivo);
-        huffman.comprimirArchivo();
     }
 }
