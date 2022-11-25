@@ -13,7 +13,8 @@ public class Main {
                 .split("T")[0];
         System.out.println("fecha " + date);
 
-        System.out.println("Desea apostar para la mañana o para la noche\nIngrese 1 para 'DIA'\nIngrese 2 para 'NOCHE'");
+        System.out
+                .println("Desea apostar para la mañana o para la noche\nIngrese 1 para 'DIA'\nIngrese 2 para 'NOCHE'");
         int turno = entrada.nextInt();
 
         List<Apuesta> apuestasList = new ArrayList<Apuesta>();
@@ -25,21 +26,21 @@ public class Main {
             apuestasList.add(apuesta);
         }
 
-        final String nombreArchivo = "jugada_"+date+"_dni_"+turno+".txt";
+        final String nombreArchivo = "jugada_" + date + "_dni_" + turno + ".txt";
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(nombreArchivo));
 
-        bw.write("Nombre del archivo="+nombreArchivo);
+        bw.write("Nombre del archivo=" + nombreArchivo);
         bw.newLine();
-        bw.write("Jugada= "+turno);
+        bw.write("Jugada= " + turno);
         bw.newLine();
-        bw.write("Fecha y Hora="+date);
+        bw.write("Fecha y Hora=" + date);
         bw.newLine();
         bw.write("Dni=32541874");
         bw.newLine();
         bw.write("Apuesta Numero Posicion\n");
-        for (Apuesta elemento: apuestasList) {
-            bw.write("$"+elemento.getValor()+" "+elemento.getNumero()+" "+elemento.getPosicion()+"\n");
+        for (Apuesta elemento : apuestasList) {
+            bw.write("$" + elemento.getValor() + " " + elemento.getNumero() + " " + elemento.getPosicion() + "\n");
         }
 
         bw.close();
