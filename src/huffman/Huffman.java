@@ -134,8 +134,6 @@ public class Huffman {
                     Integer.toBinaryString(c))
                     .replace(' ', '0'));
 
-        // System.out.println(sb.toString());
-        // TODO: improve code
         d.close();
         BufferedWriter o = new BufferedWriter(new FileWriter(origen));
 
@@ -149,7 +147,6 @@ public class Huffman {
                 continue;
             }
 
-            // System.out.printf("%c", m.get(curr));
             o.write(m.get(curr));
             chars++;
             p = f;
