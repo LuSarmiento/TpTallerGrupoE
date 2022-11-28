@@ -104,15 +104,10 @@ public class Huffman {
         BufferedReader d = new BufferedReader(new FileReader(referencia));
         Map<Integer, String> m = new LinkedHashMap<Integer, String>();
 
-        nchars = Integer.parseInt(d.readLine());
-        for (String t : d.readLine().split(",")) {
-            if (t.substring(0, 1).equals("{"))
-                t = t.substring(1, t.length());
-            if (t.substring(t.length() - 1, t.length()).equals("}"))
-                t = t.substring(0, t.length() - 1);
-
-            String[] ss = t.split("=");
-            m.put(Integer.parseInt(ss[0].trim()), ss[1].trim());
+        String s = d.readLine();
+        while ((s = d.readLine()) != null) {
+            String[] ss = s.split(",");
+            m.put(Integer.parseInt(ss[0]), ss[1]);
         }
 
         codigos = m;
