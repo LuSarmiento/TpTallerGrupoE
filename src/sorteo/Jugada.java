@@ -35,7 +35,7 @@ public class Jugada {
 
         bw.write("Apuesta Numero Posicion\n");
         for (Apuesta apuesta : this.apuestas)
-            bw.write(String.format("$%s %d %d\n", apuesta.getValor(),
+            bw.write(String.format("%s$ %d %d\n", apuesta.getValor(),
                     apuesta.getNumero(), apuesta.getPosicion()));
 
         bw.close();
