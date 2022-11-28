@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Random;
 
 public class Jugada {
-    public List<Apuesta> apuestas = new LinkedList<Apuesta>();
-    public String turno;
-    public String fecha;
-    public int dni;
+    private List<Apuesta> apuestas = new LinkedList<Apuesta>();
+    private String turno;
+    private String fecha;
+    private int dni;
 
     public Jugada(int cantidadApuestas, String turno) {
         this.fecha = java.time.LocalDate.now().toString();
@@ -45,5 +45,21 @@ public class Jugada {
         final int max = 50000000;
         final int min = 5000000;
         return new Random().nextInt(max - min) + min;
+    }
+
+    public List<Apuesta> getApuestas() {
+        return apuestas;
+    }
+
+    public String getTurno() {
+        return turno;
+    }
+
+    public String getFecha() {
+        return fecha;
+    }
+
+    public int getDni() {
+        return dni;
     }
 }
