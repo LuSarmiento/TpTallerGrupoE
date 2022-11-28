@@ -21,8 +21,8 @@ public class Huffman {
     public File origen;
     public File destino;
     public File referencia;
-    private final String SUFIJO_DESTINO = ".cmp";
-    private final String SUFIJO_REFERENCIA = ".ref";
+    private final String SUFIJO_DESTINO = ".compress";
+    private final String SUFIJO_REFERENCIA = ".codigos";
 
     public Huffman(File origen) {
         this.codigos = new LinkedHashMap<Integer, String>();
