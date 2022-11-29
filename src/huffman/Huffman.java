@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +37,8 @@ public class Huffman {
         cargarFrecuencias();
         crearArbol();
         generarCodigos();
-        comprimir();
+        // comprimir();
+        generarArchivoComprimido(this.origen.getName(), this.destino.getName());
         guardarCodigos();
     }
 
@@ -233,5 +235,112 @@ public class Huffman {
         System.out.print(str);
 
         printPreOrder(n.izq, spaces + 1);
+    }
+
+    public void generarArchivoComprimido(String nomArchivo, String nomArchivoDestino) {
+        String strBuffer = "";
+        String strBuffertmp = "";
+        File arch = new File(nomArchivoDestino);
+        arch.delete();
+        try {
+            RandomAccessFile archivoOrigen = new RandomAccessFile(nomArchivo, "r");
+            RandomAccessFile archivoDestino = new RandomAccessFile(nomArchivoDestino, "rw");
+            char dato;
+            long cont = 0;
+            long tamano = archivoOrigen.length();
+            while (cont < tamano) {
+                archivoOrigen.seek(cont);
+                dato = (char) archivoOrigen.read();
+                strBuffer = strBuffer + codigos.get((int) dato);
+                strBuffertmp = strBuffertmp + " " + this.codigos.get((int) dato);
+                strBuffer = procesarbuffer(strBuffer, archivoDestino);
+                cont++;
+            }
+            archivoOrigen.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String procesarbuffer(String strBuff, RandomAccessFile archivo) throws IOException {
+        String Auxstr = strBuff, strIingByte = "";
+        while (Auxstr.length() >= 8) {
+            strIingByte = Auxstr.substring(0, 8);
+            Auxstr = Auxstr.substring(8, Auxstr.length());
+            archivo.writeByte(stringByteToByte(strIingByte));
+        }
+        return Auxstr;
+    }
+
+    private byte stringByteToByte(String strToByte) {
+        byte Byteresult = 0;
+        int Intresult = 0;
+
+        if (strToByte.length() > 0)
+            if (Integer.parseInt(strToByte.substring(0, 1)) > 0)
+                Intresult = Intresult + 128;
+        if (strToByte.length() > 1)
+            if (Integer.parseInt(strToByte.substring(1, 2)) > 0)
+                Intresult = Intresult + 64;
+        if (strToByte.length() > 2)
+            if (Integer.parseInt(strToByte.substring(2, 3)) > 0)
+                Intresult = Intresult + 32;
+        if (strToByte.length() > 3)
+            if (Integer.parseInt(strToByte.substring(3, 4)) > 0)
+                Intresult = Intresult + 16;
+        if (strToByte.length() > 4)
+            if (Integer.parseInt(strToByte.substring(4, 5)) > 0)
+                Intresult = Intresult + 8;
+        if (strToByte.length() > 5)
+            if (Integer.parseInt(strToByte.substring(5, 6)) > 0)
+                Intresult = Intresult + 4;
+        if (strToByte.length() > 6)
+            if (Integer.parseInt(strToByte.substring(6, 7)) > 0)
+                Intresult = Intresult + 2;
+        if (strToByte.length() > 7)
+            if (Integer.parseInt(strToByte.substring(7, 8)) > 0)
+                Intresult = Intresult + 1;
+        Byteresult = (byte) Intresult;
+        return Byteresult;
+    }
+
+    public void descomprimirArchivo(String nomArchivo, String nomArchivoDestino) {
+        File arch = new File(nomArchivoDestino);
+        String codigo = "";
+        arch.delete();
+        Map<String, Integer> m = codigosInvertidos();
+        try {
+            RandomAccessFile archivoOrigen = new RandomAccessFile(nomArchivo, "r");
+            RandomAccessFile archivoDestino = new RandomAccessFile(nomArchivoDestino, "rw");
+            String strCharacter = "";
+            long cont = 0;
+            long tamano = archivoOrigen.length();
+            while (cont < tamano) {
+                archivoOrigen.seek(cont);
+                strCharacter = strCharacter + completarByte(
+                        Integer.toBinaryString((char) archivoOrigen.readByte() & 0xff));
+                cont++;
+            }
+            for (char c : strCharacter.toCharArray()) {
+                if (!m.containsKey(codigo))
+                    codigo = codigo + String.valueOf(c);
+                else {
+                    archivoDestino.writeByte(m.get(codigo));
+                    codigo = String.valueOf(c);
+                }
+            }
+            archivoOrigen.close();
+            archivoDestino.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String completarByte(String strByte) {
+        String strIni = "";
+        for (int i = strByte.length(); i < 8; i++) {
+            strIni = strIni + "0";
+        }
+        return (strIni != null && strIni.length() > 0) ? strIni + strByte : strByte;
     }
 }
