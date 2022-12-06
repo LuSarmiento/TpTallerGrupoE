@@ -239,7 +239,6 @@ public class Huffman {
 
     public void generarArchivoComprimido(String nomArchivo, String nomArchivoDestino) {
         String strBuffer = "";
-        String strBuffertmp = "";
         File arch = new File(nomArchivoDestino);
         arch.delete();
         try {
@@ -252,7 +251,6 @@ public class Huffman {
                 archivoOrigen.seek(cont);
                 dato = (char) archivoOrigen.read();
                 strBuffer = strBuffer + codigos.get((int) dato);
-                strBuffertmp = strBuffertmp + " " + this.codigos.get((int) dato);
                 strBuffer = procesarbuffer(strBuffer, archivoDestino);
                 cont++;
             }
