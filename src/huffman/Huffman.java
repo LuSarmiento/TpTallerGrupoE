@@ -270,36 +270,19 @@ public class Huffman {
         return Auxstr;
     }
 
-    private byte stringByteToByte(String strToByte) {
-        byte Byteresult = 0;
-        int Intresult = 0;
+    private byte stringByteToByte(String string) {
+        if (string.length() != 8)
+            throw new NumberFormatException();
 
-        if (strToByte.length() > 0)
-            if (Integer.parseInt(strToByte.substring(0, 1)) > 0)
-                Intresult = Intresult + 128;
-        if (strToByte.length() > 1)
-            if (Integer.parseInt(strToByte.substring(1, 2)) > 0)
-                Intresult = Intresult + 64;
-        if (strToByte.length() > 2)
-            if (Integer.parseInt(strToByte.substring(2, 3)) > 0)
-                Intresult = Intresult + 32;
-        if (strToByte.length() > 3)
-            if (Integer.parseInt(strToByte.substring(3, 4)) > 0)
-                Intresult = Intresult + 16;
-        if (strToByte.length() > 4)
-            if (Integer.parseInt(strToByte.substring(4, 5)) > 0)
-                Intresult = Intresult + 8;
-        if (strToByte.length() > 5)
-            if (Integer.parseInt(strToByte.substring(5, 6)) > 0)
-                Intresult = Intresult + 4;
-        if (strToByte.length() > 6)
-            if (Integer.parseInt(strToByte.substring(6, 7)) > 0)
-                Intresult = Intresult + 2;
-        if (strToByte.length() > 7)
-            if (Integer.parseInt(strToByte.substring(7, 8)) > 0)
-                Intresult = Intresult + 1;
-        Byteresult = (byte) Intresult;
-        return Byteresult;
+        int result = 0;
+        int bitValue = 128;
+        for (char c : string.toCharArray()) {
+            if (Integer.parseInt(String.valueOf(c)) > 0)
+                result += bitValue;
+            bitValue /= 2;
+        }
+
+        return (byte) result;
     }
 
     public void descomprimirArchivo(String nomArchivo, String nomArchivoDestino) {
