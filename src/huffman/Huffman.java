@@ -138,18 +138,14 @@ public class Huffman {
         d.close();
         RandomAccessFile o = new RandomAccessFile(origen, "rw");
 
-        String curr;
-        int p = 0, f = 1;
-        while (f <= sb.length()) {
-            curr = sb.substring(p, f);
-
-            if (m.get(curr) == null) {
-                f++;
+        String codigo = "";
+        for (char curr : sb.toString().toCharArray()) {
+            if (!m.containsKey(codigo)) {
+                codigo += String.valueOf(curr);
                 continue;
             }
-
-            o.writeByte(m.get(curr));
-            p = f;
+            o.writeByte(m.get(codigo));
+            codigo = String.valueOf(curr);
         }
         o.close();
     }
