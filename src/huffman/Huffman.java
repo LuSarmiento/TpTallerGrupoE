@@ -249,44 +249,4 @@ public class Huffman {
 
         return (byte) result;
     }
-
-    public void descomprimirArchivo(String nomArchivo, String nomArchivoDestino) {
-        File arch = new File(nomArchivoDestino);
-        String codigo = "";
-        arch.delete();
-        Map<String, Integer> m = codigosInvertidos();
-        try {
-            RandomAccessFile archivoOrigen = new RandomAccessFile(nomArchivo, "r");
-            RandomAccessFile archivoDestino = new RandomAccessFile(nomArchivoDestino, "rw");
-            String strCharacter = "";
-            long cont = 0;
-            long tamano = archivoOrigen.length();
-            while (cont < tamano) {
-                archivoOrigen.seek(cont);
-                strCharacter = strCharacter + completarByte(
-                        Integer.toBinaryString((char) archivoOrigen.readByte() & 0xff));
-                cont++;
-            }
-            for (char c : strCharacter.toCharArray()) {
-                if (!m.containsKey(codigo))
-                    codigo = codigo + String.valueOf(c);
-                else {
-                    archivoDestino.writeByte(m.get(codigo));
-                    codigo = String.valueOf(c);
-                }
-            }
-            archivoOrigen.close();
-            archivoDestino.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String completarByte(String strByte) {
-        String strIni = "";
-        for (int i = strByte.length(); i < 8; i++) {
-            strIni = strIni + "0";
-        }
-        return (strIni != null && strIni.length() > 0) ? strIni + strByte : strByte;
-    }
 }
