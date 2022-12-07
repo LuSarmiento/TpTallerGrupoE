@@ -236,39 +236,6 @@ public class Huffman {
         printPreOrder(n.izq, spaces + 1);
     }
 
-    public void generarArchivoComprimido(String nomArchivo, String nomArchivoDestino) {
-        String strBuffer = "";
-        File arch = new File(nomArchivoDestino);
-        arch.delete();
-        try {
-            RandomAccessFile archivoOrigen = new RandomAccessFile(nomArchivo, "r");
-            RandomAccessFile archivoDestino = new RandomAccessFile(nomArchivoDestino, "rw");
-            char dato;
-            long cont = 0;
-            long tamano = archivoOrigen.length();
-            while (cont < tamano) {
-                archivoOrigen.seek(cont);
-                dato = (char) archivoOrigen.read();
-                strBuffer = strBuffer + codigos.get((int) dato);
-                strBuffer = procesarbuffer(strBuffer, archivoDestino);
-                cont++;
-            }
-            archivoOrigen.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String procesarbuffer(String strBuff, RandomAccessFile archivo) throws IOException {
-        String Auxstr = strBuff, strIingByte = "";
-        while (Auxstr.length() >= 8) {
-            strIingByte = Auxstr.substring(0, 8);
-            Auxstr = Auxstr.substring(8, Auxstr.length());
-            archivo.writeByte(stringByteToByte(strIingByte));
-        }
-        return Auxstr;
-    }
-
     private byte stringByteToByte(String string) {
         if (string.length() != 8)
             throw new NumberFormatException();
