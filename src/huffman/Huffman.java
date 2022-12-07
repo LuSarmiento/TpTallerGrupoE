@@ -124,7 +124,7 @@ public class Huffman {
     }
 
     public void descomprimir() throws Exception {
-        BufferedReader d = new BufferedReader(new FileReader(destino));
+        RandomAccessFile d = new RandomAccessFile(destino, "r");
         Map<String, Integer> m = codigosInvertidos();
 
         StringBuilder sb = new StringBuilder();
@@ -136,11 +136,11 @@ public class Huffman {
                     .replace(' ', '0'));
 
         d.close();
-        BufferedWriter o = new BufferedWriter(new FileWriter(origen));
+        RandomAccessFile o = new RandomAccessFile(origen, "rw");
 
         String curr;
-        int mchars = 9, chars = 0, p = 0, f = 1;
-        while (f <= sb.length() && chars < mchars) {
+        int p = 0, f = 1;
+        while (f <= sb.length()) {
             curr = sb.substring(p, f);
 
             if (m.get(curr) == null) {
@@ -148,8 +148,7 @@ public class Huffman {
                 continue;
             }
 
-            o.write(m.get(curr));
-            chars++;
+            o.writeByte(m.get(curr));
             p = f;
         }
         o.close();
