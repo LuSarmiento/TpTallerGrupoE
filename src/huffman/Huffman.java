@@ -37,8 +37,7 @@ public class Huffman {
         cargarFrecuencias();
         crearArbol();
         generarCodigos();
-        // comprimir();
-        generarArchivoComprimido(this.origen.getName(), this.destino.getName());
+        comprimir();
         guardarCodigos();
     }
 
@@ -59,12 +58,12 @@ public class Huffman {
     }
 
     public void comprimir() throws Exception {
-        BufferedWriter d = new BufferedWriter(new FileWriter(destino));
+        RandomAccessFile d = new RandomAccessFile(destino, "rw");
         String cmp = mensajeCodificado();
 
         while (cmp.length() >= 8) {
             String b = cmp.substring(0, 8);
-            d.write(Integer.parseInt(b, 2));
+            d.writeByte(stringByteToByte(b));
             cmp = cmp.substring(8, cmp.length());
         }
 
