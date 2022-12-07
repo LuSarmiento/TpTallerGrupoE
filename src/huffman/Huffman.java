@@ -37,8 +37,7 @@ public class Huffman {
         cargarFrecuencias();
         crearArbol();
         generarCodigos();
-        // comprimir();
-        generarArchivoComprimido(this.origen.getName(), this.destino.getName());
+        comprimir();
         guardarCodigos();
     }
 
@@ -59,12 +58,12 @@ public class Huffman {
     }
 
     public void comprimir() throws Exception {
-        BufferedWriter d = new BufferedWriter(new FileWriter(destino));
+        RandomAccessFile d = new RandomAccessFile(destino, "rw");
         String cmp = mensajeCodificado();
 
         while (cmp.length() >= 8) {
             String b = cmp.substring(0, 8);
-            d.write(Integer.parseInt(b, 2));
+            d.writeByte(stringByteToByte(b));
             cmp = cmp.substring(8, cmp.length());
         }
 
@@ -125,7 +124,7 @@ public class Huffman {
     }
 
     public void descomprimir() throws Exception {
-        BufferedReader d = new BufferedReader(new FileReader(destino));
+        RandomAccessFile d = new RandomAccessFile(destino, "r");
         Map<String, Integer> m = codigosInvertidos();
 
         StringBuilder sb = new StringBuilder();
@@ -137,21 +136,16 @@ public class Huffman {
                     .replace(' ', '0'));
 
         d.close();
-        BufferedWriter o = new BufferedWriter(new FileWriter(origen));
+        RandomAccessFile o = new RandomAccessFile(origen, "rw");
 
-        String curr;
-        int mchars = 9, chars = 0, p = 0, f = 1;
-        while (f <= sb.length() && chars < mchars) {
-            curr = sb.substring(p, f);
-
-            if (m.get(curr) == null) {
-                f++;
+        String codigo = "";
+        for (char curr : sb.toString().toCharArray()) {
+            if (!m.containsKey(codigo)) {
+                codigo += String.valueOf(curr);
                 continue;
             }
-
-            o.write(m.get(curr));
-            chars++;
-            p = f;
+            o.writeByte(m.get(codigo));
+            codigo = String.valueOf(curr);
         }
         o.close();
     }
@@ -237,39 +231,6 @@ public class Huffman {
         printPreOrder(n.izq, spaces + 1);
     }
 
-    public void generarArchivoComprimido(String nomArchivo, String nomArchivoDestino) {
-        String strBuffer = "";
-        File arch = new File(nomArchivoDestino);
-        arch.delete();
-        try {
-            RandomAccessFile archivoOrigen = new RandomAccessFile(nomArchivo, "r");
-            RandomAccessFile archivoDestino = new RandomAccessFile(nomArchivoDestino, "rw");
-            char dato;
-            long cont = 0;
-            long tamano = archivoOrigen.length();
-            while (cont < tamano) {
-                archivoOrigen.seek(cont);
-                dato = (char) archivoOrigen.read();
-                strBuffer = strBuffer + codigos.get((int) dato);
-                strBuffer = procesarbuffer(strBuffer, archivoDestino);
-                cont++;
-            }
-            archivoOrigen.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String procesarbuffer(String strBuff, RandomAccessFile archivo) throws IOException {
-        String Auxstr = strBuff, strIingByte = "";
-        while (Auxstr.length() >= 8) {
-            strIingByte = Auxstr.substring(0, 8);
-            Auxstr = Auxstr.substring(8, Auxstr.length());
-            archivo.writeByte(stringByteToByte(strIingByte));
-        }
-        return Auxstr;
-    }
-
     private byte stringByteToByte(String string) {
         if (string.length() != 8)
             throw new NumberFormatException();
@@ -283,45 +244,5 @@ public class Huffman {
         }
 
         return (byte) result;
-    }
-
-    public void descomprimirArchivo(String nomArchivo, String nomArchivoDestino) {
-        File arch = new File(nomArchivoDestino);
-        String codigo = "";
-        arch.delete();
-        Map<String, Integer> m = codigosInvertidos();
-        try {
-            RandomAccessFile archivoOrigen = new RandomAccessFile(nomArchivo, "r");
-            RandomAccessFile archivoDestino = new RandomAccessFile(nomArchivoDestino, "rw");
-            String strCharacter = "";
-            long cont = 0;
-            long tamano = archivoOrigen.length();
-            while (cont < tamano) {
-                archivoOrigen.seek(cont);
-                strCharacter = strCharacter + completarByte(
-                        Integer.toBinaryString((char) archivoOrigen.readByte() & 0xff));
-                cont++;
-            }
-            for (char c : strCharacter.toCharArray()) {
-                if (!m.containsKey(codigo))
-                    codigo = codigo + String.valueOf(c);
-                else {
-                    archivoDestino.writeByte(m.get(codigo));
-                    codigo = String.valueOf(c);
-                }
-            }
-            archivoOrigen.close();
-            archivoDestino.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String completarByte(String strByte) {
-        String strIni = "";
-        for (int i = strByte.length(); i < 8; i++) {
-            strIni = strIni + "0";
-        }
-        return (strIni != null && strIni.length() > 0) ? strIni + strByte : strByte;
     }
 }
